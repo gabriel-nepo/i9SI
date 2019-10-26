@@ -16,26 +16,44 @@ $(document).ready(function() {
         var line = new Morris.Line({
             element          : 'vendas-dia',
             resize           : true,
-            data             : parseVendas(result),
+            data             : parseVendas(),
             xkey             : 'y',
             ykeys            : ['item1'],
-            labels           : ['Item 1'],
+            labels           : ['Quantidade de vendas'],
             lineColors       : ['#495057'],
-            lineWidth        : 2,
             hideHover        : 'auto',
-            gridTextColor    : '#444',
             gridStrokeWidth  : 0.4,
-            pointSize        : 4,
-            pointStrokeColors: ['#495057'],
-            gridLineColor    : '#495057',
-            gridTextFamily   : 'Open Sans',
-            gridTextSize     : 10
+            pointSize        : 4
+        })
+        var area = new Morris.Area({
+            element   : 'num-fidel',
+            resize    : true,
+            data      : parseVendasFidel(),
+            xkey      : 'y',
+            ykeys     : ['item1', 'item2'],
+            labels    : ['Fidelizado', 'Não fidelizado'],
+            lineColors: ['#495057', '#765ea8'],
+            hideHover : 'auto'
+        })            
+        // Donut Chart
+        var donut = new Morris.Donut({
+            element  : 'porc-fidel',
+            resize   : true,
+            colors   : ['#765ea8', '#333'],
+            data     : parsePorcVendasFidel(),
+            hideHover: 'auto'
+        })
+
+        // Fix for charts under tabs
+        $('.box ul.nav a').on('shown.bs.tab', function () {
+            area.redraw()
+            donut.redraw()
         })
     }, 3000);
 });
 
 
-function parseVendas(result) {
+function parseVendas() {
     var mediaDias = [0,0,0,0,0,0,0,0,0,0,0,0];
     console.log(result[0]);
     result.forEach(query => {
@@ -48,6 +66,48 @@ function parseVendas(result) {
     for(var i=0;i<12;i++) {
         data.push({y:`2019-09-${i+13}`, item1: mediaDias[i]})
     }
+    return data;
+}
+
+function parseVendasFidel() {
+    var vendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
+    var vendasDiasInfidel = [0,0,0,0,0,0,0,0,0,0,0,0];
+    console.log(result[0]);
+    result.forEach(query => {
+        query.forEach(element => {
+            let dia = element.date.dia - 13;
+            if (element.points == 0) {
+                vendasDiasInfidel[dia]++
+            } else {
+                vendasDias[dia]++;
+            }
+        });        
+    });
+    var data = [];
+    for(var i=0;i<12;i++) {
+        data.push({y:`2019-09-${i+13}`, item1: vendasDias[i], item2: vendasDiasInfidel[i]})
+    }
+    return data;
+}
+
+function parsePorcVendasFidel() {
+    var vendasFidel = 0;
+    var vendasInfidel = 0;
+    console.log(result[0]);
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia>=20) {
+                if (element.points == 0) {
+                    vendasInfidel++;
+                } else {
+                    vendasFidel++;
+                }
+            }
+        });        
+    });
+    fidelPorc = parseInt(100*vendasFidel/(vendasFidel + vendasInfidel));
+    var data = [{label:`Fidelizado`, value: fidelPorc},
+                {label:`Não Fidelizado`, value: 100-fidelPorc}]
     return data;
 }
 
