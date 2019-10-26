@@ -79,25 +79,52 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row justify-content-md-center">
-          <div class="col-lg-8">
-            <div class="card card-primary card-outline">
+          <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex p-0">
+                  <h3 class="card-title p-3">
+                    <i class="fa fa-pie-chart mr-1"></i>
+                    Quantidade de vendas por dia
+                  </h3>
+                </div><!-- /.card-header -->
                 <div class="card-body">
-                  <!-- Custom tabs (Charts with tabs)-->
-                  <div class="card">
-                    <div class="card-header d-flex p-0">
-                      <h3 class="card-title p-3">
-                        <i class="fa fa-pie-chart mr-1"></i>
-                        Quantidade de vendas por dia
-                      </h3>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div class="tab-content p-0">
-                        <div class="chart" id="vendas-dia" style="height: 250px;"></div>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
+                    <div class="tab-content p-0">
+                      <div class="chart text-center" id="vendas-dia" style="height: 250px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
+                    </div>
+                </div>
                   <!-- /.card -->
-
+            </div>
+          </div> <!-- /. col -->
+          <div class="col-md-4">
+            <div class="row" style="margin: 0;">
+                <div class="col-md-12 small-box bg-success">
+                    <div class="inner">
+                      <h3 id="clientes-fidelizados">0</h3>
+      
+                      <p>Clientes Fidelizados</p>
+                    </div>
+                    <div class="icon">
+                      <i class="ion ion-bag"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin: 0;">
+                <div class="col-md-12 small-box bg-primary">
+                    <div class="inner">
+                      <h3 id="pontuacao-distribuida">0</h3>
+      
+                      <p>Pontos distribuídos</p>
+                    </div>
+                    <div class="icon">
+                      <i class="ion ion-bag"></i>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-md-center">
+          <!-- /.col-md-6 -->
+          <div class="col-md-12">
                   <!-- Custom tabs (Charts with tabs)-->
                   <div class="card">
                       <div class="card-header d-flex p-0">
@@ -117,17 +144,14 @@
                       <div class="card-body">
                         <div class="tab-content p-0">
                           <!-- Morris chart - Sales -->
-                          <div class="chart tab-pane active" id="num-fidel"
-                               style="position: relative; height: 300px;"></div>
-                          <div class="chart tab-pane" id="porc-fidel" style="position: relative; height: 300px;"></div>
+                          <div class="chart tab-pane active text-center" id="num-fidel"
+                               style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
+                          <div class="chart tab-pane text-center" id="porc-fidel" style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
                         </div>
                       </div><!-- /.card-body -->
                     </div>
                     <!-- /.card -->
-                </div>
-            </div>
           </div>
-          <!-- /.col-md-6 -->
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->

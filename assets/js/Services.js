@@ -32,10 +32,11 @@ $(document).ready(function() {
             resize    : true,
             data      : parseVendasFidel(),
             xkey      : 'y',
-            ykeys     : ['item1', 'item2'],
-            labels    : ['Fidelizado', 'Não fidelizado'],
-            lineColors: ['#495057', '#765ea8'],
-            hideHover : 'auto'
+            ykeys     : ['item1', 'item2', 'item3'],
+            labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
+            lineColors: ['#888', '#765ea8', '#495057'],
+            hideHover : 'auto',
+            behaveLikeLine: 'true'
         })            
         // Donut Chart
         var donut = new Morris.Donut({
@@ -45,7 +46,9 @@ $(document).ready(function() {
             data     : parsePorcVendasFidel(),
             hideHover: 'auto'
         })
-
+        $('.loading-gif').remove();
+        document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
+        document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
         // Fix for charts under tabs
         $('.box ul.nav a').on('shown.bs.tab', function () {
             area.redraw()
@@ -130,7 +133,7 @@ function parseVendasFidel() {
     });
     var data = [];
     for(var i=0;i<12;i++) {
-        data.push({y:`2019-09-${i+13}`, item1: vendasDias[i], item2: vendasDiasInfidel[i]})
+        data.push({y:`2019-09-${i+13}`, item1: vendasDiasInfidel[i]+vendasDias[i], item2: vendasDias[i], item3: vendasDiasInfidel[i]})
     }
     return data;
 }
@@ -154,6 +157,36 @@ function parsePorcVendasFidel() {
     var data = [{label:`Fidelizado`, value: fidelPorc},
                 {label:`Não Fidelizado`, value: 100-fidelPorc}]
     return data;
+}
+
+function parseClientesFidelizados() {
+    var vendasFidel = 0;
+    console.log(result[0]);
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia>=20) {
+                if (element.points != 0) {
+                    vendasFidel++;
+                }
+            }
+        });        
+    });
+    return vendasFidel;
+}
+
+function parsePontDist() {
+    var pontosDistribuidos = 0;
+    console.log(result[0]);
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia>=20) {
+                if (element.points != 0) {
+                    pontosDistribuidos+= element.points;
+                }
+            }
+        });        
+    });
+    return pontosDistribuidos;
 }
 
 function parseMediaVendas(result) {
