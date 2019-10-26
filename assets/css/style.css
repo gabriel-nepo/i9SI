@@ -6,3 +6,12 @@
 	color: #5e5e5e;
 	border-bottom: solid 1px gray;
 }
+
+.brand-img {
+	max-height: 50px;
+	max-width: 200px;
+}
+
+.i9SI-img {
+	max-height: 25px;
+}
