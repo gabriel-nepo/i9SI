@@ -13,8 +13,6 @@ $(document).ready(function() {
         xmlhttp.send();
     }
     setTimeout(function(){
-        dadosParaGrafico();
-
         var line = new Morris.Line({
             element          : 'vendas-dia',
             resize           : true,
@@ -22,9 +20,12 @@ $(document).ready(function() {
             xkey             : 'y',
             ykeys            : ['item1'],
             labels           : ['Quantidade de vendas'],
-            lineColors       : ['#495057'],
+            lineColors       : ['#555'],
             hideHover        : 'auto',
             gridStrokeWidth  : 0.4,
+            events           : ['2019-09-19'],
+            eventStrokeWidth   : 3,
+            eventLineColors  : ['#A59DB7'],
             pointSize        : 4
         })
         var line = new Morris.Line({
@@ -33,10 +34,13 @@ $(document).ready(function() {
             data             : parseLucro(),
             xkey             : 'y',
             ykeys            : ['item1'],
-            labels           : ['Quantidade de lucro'],
+            labels           : ['Quantidade de Receita'],
             lineColors       : ['#495057'],
             hideHover        : 'auto',
             gridStrokeWidth  : 0.4,
+            events           : ['2019-09-19'],
+            eventStrokeWidth   : 3,
+            eventLineColors  : ['#A59DB7'],
             pointSize        : 4
         })
         var area = new Morris.Area({
@@ -48,6 +52,9 @@ $(document).ready(function() {
             labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
             lineColors: ['#888', '#765ea8', '#495057'],
             hideHover : 'auto',
+            events           : ['2019-09-19'],
+            eventStrokeWidth   : 3,
+            eventLineColors  : ['#A59DB7'],
             behaveLikeLine: 'true'
         })            
         // Donut Chart
@@ -61,7 +68,7 @@ $(document).ready(function() {
         var chartL = new Morris.Bar({
             element  : 'media-a-d',
             resize   : true,
-            colors   : ['#765ea8', '#333'],
+            barColors   : ['#A59DB7', '#765ea8'],
             data     : parseAntesDepoisVendas(),
             xkey     : 'y',
             ykeys    : ['item1', 'item2'],
@@ -71,17 +78,29 @@ $(document).ready(function() {
         var chartV = new Morris.Bar({
             element  : 'media-a-d-v',
             resize   : true,
-            colors   : ['#765ea8', '#333'],
+            barColors   : ['#A59DB7', '#765ea8'],
             data     : parseAntesDepoisLucro(),
             xkey     : 'y',
             ykeys    : ['item1', 'item2'],
             labels   : ['Antes', 'Depois'],
             hideHover: 'auto'
         })
+        var vendashora = new Morris.Area({
+            element   : 'vendas-hora',
+            resize    : true,
+            data      : parseVendasHora(),
+            xkey      : 'y',
+            ykeys     : ['item1', 'item2', 'item3'],
+            labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
+            lineColors: ['#888', '#765ea8', '#495057'],
+            hideHover : 'auto',
+            behaveLikeLine: 'true',
+            parseTime : false
+        })
         $('.loading-gif').remove();
         document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
         document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
-        document.getElementById("clientes-nao-fid").innerHTML = parseClientesNaoFidelizados();
+        document.getElementById("clientes-nao-fid").innerHTML = 100 - parseClientesFidelizados();
         // Fix for charts under tabs
         $('.box ul.nav a').on('shown.bs.tab', function () {
             area.redraw()
@@ -92,53 +111,36 @@ $(document).ready(function() {
     }, 3000);
 });
 
-function dadosParaGrafico(){
-    var lucroDias = [0,0,0,0,0,0,0,0,0,0,0,0]
-    var quantidadeVendasDias= [0,0,0,0,0,0,0,0,0,0,0,0]
-    var lucroFidelizadoDia = [0,0,0,0,0]
-    var mediaLucroAD = []
-    var mediaQuantidadeVendasAD = []
-    var mediaLucroFNF = []
-
-    for(var i = 0; i < result.length; i++){
-        for(var j = 0; j < result[i].length; j++){
-            elemento = result[i][j]
-            dia = elemento.date.dia - 13
-            console.log(elemento.products[0].data.pricePerUnit)
-            lucroDias[dia] +=  elemento.quantity * elemento.products[0].data.pricePerUnit
-            quantidadeVendasDias[dia] ++
-            if (dia > 6 && elemento.points != 0){
-                diaAux = dia - 6
-                lucroFidelizadoDia[diaAux] += elemento.quantity * elemento.products[0].data.pricePerUnit
+function parseVendasHora() {
+    horas = []
+    horasFNF = []
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia >= 20) {
+                // quantas vendas foram realizadas na hora x
+                if(typeof horas[element.date.hora] === 'undefined'){
+                    horas[element.date.hora] = 1
+                }else{
+                    horas[element.date.hora]++
+                }
+                // quantas vendas da hora x  sao de clientes fidelizados
+                if(typeof horasFNF[element.date.hora] === 'undefined'){
+                    horasFNF[element.date.hora] = 1
+                }else if(element.points != 0){
+                    horasFNF[element.date.hora]++
+                }
             }
+        });        
+    });
+    var data = [];
+    for(var i=0;i<24;i++) {
+        if(typeof horas[i]==='undefined') {
+            data.push({y:`${i}`+"h", item1: 0, item2: 0, item3: 0});
+        } else {
+            data.push({y:`${i}`+"h", item1: horas[i]/5, item2: horasFNF[i]/5, item3: (horas[i]-horasFNF[i])/5});
         }
     }
-
-    mediaLucroAD[0] = (lucroDias[0] + lucroDias[1] + lucroDias[2] + lucroDias[3] + lucroDias[4] + lucroDias[5] + lucroDias[6])/7
-    mediaLucroAD[1] = (lucroDias[7] + lucroDias[8] + lucroDias[9] + lucroDias[10] + lucroDias[11])/5
-
-    mediaQuantidadeVendasAD[0] = (quantidadeVendasDias[0] + quantidadeVendasDias[1] + quantidadeVendasDias[2] + quantidadeVendasDias[3] + quantidadeVendasDias[4] + quantidadeVendasDias[5] + quantidadeVendasDias[6])/7
-    mediaQuantidadeVendasAD[1] = (quantidadeVendasDias[7] + quantidadeVendasDias[8] + quantidadeVendasDias[9] + quantidadeVendasDias[10] + quantidadeVendasDias[11])/5
-    
-    mediaLucroFNF[0] = (
-        (lucroFidelizadoDia[0]/lucroDias[7]*100) + 
-        (lucroFidelizadoDia[1]/lucroDias[8]*100) +
-        (lucroFidelizadoDia[2]/lucroDias[9]*100) +
-        (lucroFidelizadoDia[3]/lucroDias[10]*100) +
-        (lucroFidelizadoDia[4]/lucroDias[11]*100))/5
-        
-    console.log(lucroDias)
-    console.log(mediaLucroAD)
-    
-    console.log(quantidadeVendasDias)
-    console.log(mediaQuantidadeVendasAD)
-
-    console.log(mediaLucroFNF)
-}
-
-function switchTab(oldid, newid) {
-    $("#"+oldid).css("display", "none");
-    $("#"+newid).css("display", "block");
+    return data;
 }
 
 function parseLucro() {
@@ -179,7 +181,7 @@ function parseAntesDepoisLucro() {
         lucroDepois+=lucroDias[i];
     }
     lucroDepois/=5;
-    data.push({y: "Média de lucro", item1: lucroAntes.toFixed(2), item2: lucroDepois.toFixed(2)})
+    data.push({y: "Média de Receita por dia", item1: lucroAntes.toFixed(2), item2: lucroDepois.toFixed(2)})
     return data;
 }
 function parseAntesDepoisVendas() {
@@ -201,7 +203,7 @@ function parseAntesDepoisVendas() {
         qntDepois+=quantidadeVendasDias[i];
     }
     qntDepois/=5;
-    data.push({y: "Média de Vendas", item1: parseInt(qntAntes), item2: parseInt(qntDepois)})
+    data.push({y: "Média de Vendas por dia", item1: parseInt(qntAntes), item2: parseInt(qntDepois)})
     return data;
 }
 
@@ -255,8 +257,8 @@ function parsePorcVendasFidel() {
         });        
     });
     fidelPorc = parseInt(100*vendasFidel/(vendasFidel + vendasInfidel));
-    var data = [{label:`Fidelizado`, value: fidelPorc},
-                {label:`Não Fidelizado`, value: 100-fidelPorc}]
+    var data = [{label:`Fidelizados`, value: fidelPorc},
+                {label:`Não Fidelizados`, value: 100-fidelPorc}]
     return data;
 }
 
@@ -281,7 +283,7 @@ function parseClientesNaoFidelizados() {
     var clientes = [];
     result.forEach(query => {
         query.forEach(element => {
-            if (element.points == 0 && !clientes.includes(element.cliente.id)) {
+            if (element.date.day >= 20 && element.points == 0 && !clientes.includes(element.cliente.id)) {
                 vendasInfidel++;
                 clientes.push(element.cliente.id);
             }
