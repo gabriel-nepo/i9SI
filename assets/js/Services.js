@@ -13,6 +13,8 @@ $(document).ready(function() {
         xmlhttp.send();
     }
     setTimeout(function(){
+        dadosParaGrafico();
+
         var line = new Morris.Line({
             element          : 'vendas-dia',
             resize           : true,
@@ -52,6 +54,49 @@ $(document).ready(function() {
     }, 3000);
 });
 
+function dadosParaGrafico(){
+    var lucroDias = [0,0,0,0,0,0,0,0,0,0,0,0]
+    var quantidadeVendasDias= [0,0,0,0,0,0,0,0,0,0,0,0]
+    var lucroFidelizadoDia = [0,0,0,0,0]
+    var mediaLucroAD = []
+    var mediaQuantidadeVendasAD = []
+    var mediaLucroFNF = []
+
+    for(var i = 0; i < result.length; i++){
+        for(var j = 0; j < result[i].length; j++){
+            elemento = result[i][j]
+            dia = elemento.date.dia - 13
+            console.log(elemento.products[0].data.pricePerUnit)
+            lucroDias[dia] +=  elemento.quantity * elemento.products[0].data.pricePerUnit
+            quantidadeVendasDias[dia] ++
+            if (dia > 6 && elemento.points != 0){
+                diaAux = dia - 6
+                lucroFidelizadoDia[diaAux] += elemento.quantity * elemento.products[0].data.pricePerUnit
+            }
+        }
+    }
+
+    mediaLucroAD[0] = (lucroDias[0] + lucroDias[1] + lucroDias[2] + lucroDias[3] + lucroDias[4] + lucroDias[5] + lucroDias[6])/7
+    mediaLucroAD[1] = (lucroDias[7] + lucroDias[8] + lucroDias[9] + lucroDias[10] + lucroDias[11])/5
+
+    mediaQuantidadeVendasAD[0] = (quantidadeVendasDias[0] + quantidadeVendasDias[1] + quantidadeVendasDias[2] + quantidadeVendasDias[3] + quantidadeVendasDias[4] + quantidadeVendasDias[5] + quantidadeVendasDias[6])/7
+    mediaQuantidadeVendasAD[1] = (quantidadeVendasDias[7] + quantidadeVendasDias[8] + quantidadeVendasDias[9] + quantidadeVendasDias[10] + quantidadeVendasDias[11])/5
+    
+    mediaLucroFNF[0] = (
+        (lucroFidelizadoDia[0]/lucroDias[7]*100) + 
+        (lucroFidelizadoDia[1]/lucroDias[8]*100) +
+        (lucroFidelizadoDia[2]/lucroDias[9]*100) +
+        (lucroFidelizadoDia[3]/lucroDias[10]*100) +
+        (lucroFidelizadoDia[4]/lucroDias[11]*100))/5
+        
+    console.log(lucroDias)
+    console.log(mediaLucroAD)
+    
+    console.log(quantidadeVendasDias)
+    console.log(mediaQuantidadeVendasAD)
+
+    console.log(mediaLucroFNF)
+}
 
 function parseVendas() {
     var mediaDias = [0,0,0,0,0,0,0,0,0,0,0,0];
