@@ -9,6 +9,7 @@
 
 
   <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/plugins/morris/morris.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <!-- Ionicons -->
@@ -104,10 +105,21 @@
                           <i class="fa fa-pie-chart mr-1"></i>
                           Número de vendas entre fidelizados e não fidelizados
                         </h3>
+                        <ul class="nav nav-pills ml-auto p-2">
+                          <li class="nav-item">
+                            <a class="nav-link active" href="#num-fidel" data-toggle="tab">Area</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#porc-fidel" data-toggle="tab">Donut</a>
+                          </li>
+                        </ul>
                       </div><!-- /.card-header -->
                       <div class="card-body">
                         <div class="tab-content p-0">
-                          <div class="chart" id="num-fidel" style="height: 250px;"></div>
+                          <!-- Morris chart - Sales -->
+                          <div class="chart tab-pane active" id="num-fidel"
+                               style="position: relative; height: 300px;"></div>
+                          <div class="chart tab-pane" id="porc-fidel" style="position: relative; height: 300px;"></div>
                         </div>
                       </div><!-- /.card-body -->
                     </div>
