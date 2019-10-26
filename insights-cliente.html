@@ -30,14 +30,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="index.html">Insights Gerais <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item active">
           <a class="nav-link" href="insights-cliente.html">Insights por Cliente</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="login.html" >Sair</a>
+          <a class="nav-link" href="login.html">Sair</a>
         </li>
       </ul>
     </div>
@@ -113,33 +113,6 @@
           </div>
         </div>
         <div class="row justify-content-md-center">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header d-flex p-0">
-                      <h3 class="card-title p-3">
-                        <i class="fa fa-pie-chart mr-1"></i>
-                        Média Antes e Depois
-                      </h3>
-                      <ul class="nav nav-pills ml-auto p-2">
-                        <li class="nav-item">
-                          <a class="nav-link active" href="#media-a-d" data-toggle="tab">Area</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#media-a-d-v" data-toggle="tab">Donut</a>
-                        </li>
-                      </ul>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div class="tab-content p-0">
-                        <!-- Morris chart - Sales -->
-                        <div class="chart tab-pane active text-center" id="media-a-d"
-                             style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
-                        <div class="chart tab-pane text-center" id="media-a-d-v" style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
-                      <!-- /.card -->
-            </div>
             <div class="col-md-8">
               <div class="card" style="height: 374.3px;">
                   <div class="card-header d-flex p-0">
@@ -156,10 +129,26 @@
                     <!-- /.card -->
               </div>
             </div>
+            <div class="col-md-4">
+                <div class="card" style="height: 374.3px;">
+                    <div class="card-header d-flex p-0">
+                      <h3 class="card-title p-3">
+                        <i class="fa fa-pie-chart mr-1"></i>
+                        Média antes e depois
+                      </h3>
+                    </div><!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="tab-content p-0">
+                          <div class="chart text-center" id="media-a-d" style="height: 250px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
+                        </div>
+                    </div>
+                      <!-- /.card -->
+                </div>
+              </div>
         </div>
         <div class="row justify-content-md-center">
           <!-- /.col-md-6 -->
-          <div class="col-md-8">
+          <div class="col-md-12">
                   <!-- Custom tabs (Charts with tabs)-->
                   <div class="card">
                       <div class="card-header d-flex p-0">
@@ -169,37 +158,23 @@
                         </h3>
                         <ul class="nav nav-pills ml-auto p-2">
                           <li class="nav-item">
-                            <a class="nav-link" onclick="switchTab('porc-fidel', 'num-fidel')">Area</a>
+                            <a class="nav-link active" href="#num-fidel" data-toggle="tab">Area</a>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" onclick="switchTab('num-fidel', 'porc-fidel')">Donut</a>
+                            <a class="nav-link" href="#porc-fidel" data-toggle="tab">Donut</a>
                           </li>
                         </ul>
                       </div><!-- /.card-header -->
                       <div class="card-body">
+                        <div class="tab-content p-0">
+                          <!-- Morris chart - Sales -->
                           <div class="chart tab-pane active text-center" id="num-fidel"
                                style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
-                          <div class="chart tab-pane text-center" id="porc-fidel" style="position: relative; height: 300px; display: none;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
+                          <div class="chart tab-pane text-center" id="porc-fidel" style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
+                        </div>
                       </div><!-- /.card-body -->
                     </div>
                     <!-- /.card -->
-          </div>
-          
-          <div class="col-md-4">
-              <div class="card" style="height: 374.3px;">
-                  <div class="card-header d-flex p-0">
-                    <h3 class="card-title p-3">
-                      <i class="fa fa-pie-chart mr-1"></i>
-                      Média antes e depois
-                    </h3>
-                  </div><!-- /.card-header -->
-                  <div class="card-body">
-                      <div class="tab-content p-0">
-                        <div class="chart text-center" id="media-a-d" style="height: 250px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
-                      </div>
-                  </div>
-                    <!-- /.card -->
-              </div>
           </div>
         </div>
         <!-- /.row -->

@@ -27,6 +27,18 @@ $(document).ready(function() {
             gridStrokeWidth  : 0.4,
             pointSize        : 4
         })
+        var line = new Morris.Line({
+            element          : 'lucro-dia',
+            resize           : true,
+            data             : parseLucro(),
+            xkey             : 'y',
+            ykeys            : ['item1'],
+            labels           : ['Quantidade de lucro'],
+            lineColors       : ['#495057'],
+            hideHover        : 'auto',
+            gridStrokeWidth  : 0.4,
+            pointSize        : 4
+        })
         var area = new Morris.Area({
             element   : 'num-fidel',
             resize    : true,
@@ -46,13 +58,36 @@ $(document).ready(function() {
             data     : parsePorcVendasFidel(),
             hideHover: 'auto'
         })
+        var chartL = new Morris.Bar({
+            element  : 'media-a-d',
+            resize   : true,
+            colors   : ['#765ea8', '#333'],
+            data     : parseAntesDepoisVendas(),
+            xkey     : 'y',
+            ykeys    : ['item1', 'item2'],
+            labels   : ['Antes', 'Depois'],
+            hideHover: 'auto'
+        })
+        var chartV = new Morris.Bar({
+            element  : 'media-a-d-v',
+            resize   : true,
+            colors   : ['#765ea8', '#333'],
+            data     : parseAntesDepoisLucro(),
+            xkey     : 'y',
+            ykeys    : ['item1', 'item2'],
+            labels   : ['Antes', 'Depois'],
+            hideHover: 'auto'
+        })
         $('.loading-gif').remove();
         document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
         document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
+        document.getElementById("clientes-nao-fid").innerHTML = parseClientesNaoFidelizados();
         // Fix for charts under tabs
         $('.box ul.nav a').on('shown.bs.tab', function () {
             area.redraw()
             donut.redraw()
+            chartL.redraw()
+            chartV.redraw()
         })
     }, 3000);
 });
@@ -101,9 +136,77 @@ function dadosParaGrafico(){
     console.log(mediaLucroFNF)
 }
 
+function switchTab(oldid, newid) {
+    $("#"+oldid).css("display", "none");
+    $("#"+newid).css("display", "block");
+}
+
+function parseLucro() {
+    var lucroDias = [0,0,0,0,0,0,0,0,0,0,0,0]
+    var quantidadeVendasDias = [0,0,0,0,0,0,0,0,0,0,0,0]
+    result.forEach(query => {
+        query.forEach(element => {
+            let dia = element.date.dia - 13
+            lucroDias[dia] +=  element.quantity * element.products[0].data.pricePerUnit;
+            quantidadeVendasDias[dia]++;
+        });        
+    });
+    var data = [];
+    for(var i=0;i<12;i++) {
+        data.push({y:`2019-09-${i+13}`, item1: lucroDias[i].toFixed(2)})
+    }
+    return data;
+}
+
+function parseAntesDepoisLucro() {
+    var lucroDias = [0,0,0,0,0,0,0,0,0,0,0,0];
+    var quantidadeVendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
+    result.forEach(query => {
+        query.forEach(element => {
+            let dia = element.date.dia - 13
+            lucroDias[dia] +=  element.quantity * element.products[0].data.pricePerUnit;
+            quantidadeVendasDias[dia]++;
+        });        
+    });
+    var data = [];
+    var lucroAntes = 0;
+    var lucroDepois = 0;
+    for(var i=0;i<7;i++) {
+        lucroAntes+=lucroDias[i];
+    }
+    lucroAntes/=7;
+    for(var i=7;i<12;i++) {
+        lucroDepois+=lucroDias[i];
+    }
+    lucroDepois/=5;
+    data.push({y: "Média de lucro", item1: lucroAntes.toFixed(2), item2: lucroDepois.toFixed(2)})
+    return data;
+}
+function parseAntesDepoisVendas() {
+    var quantidadeVendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
+    result.forEach(query => {
+        query.forEach(element => {
+            let dia = element.date.dia - 13
+            quantidadeVendasDias[dia]++;
+        });        
+    });
+    var data = [];
+    var qntAntes = 0;
+    var qntDepois = 0;
+    for(var i=0;i<7;i++) {
+        qntAntes+=quantidadeVendasDias[i];
+    }
+    qntAntes/=7;
+    for(var i=7;i<12;i++) {
+        qntDepois+=quantidadeVendasDias[i];
+    }
+    qntDepois/=5;
+    data.push({y: "Média de Vendas", item1: parseInt(qntAntes), item2: parseInt(qntDepois)})
+    return data;
+}
+
 function parseVendas() {
     var mediaDias = [0,0,0,0,0,0,0,0,0,0,0,0];
-    console.log(result[0]);
     result.forEach(query => {
         query.forEach(element => {
             let dia = element.date.dia - 13;
@@ -120,7 +223,6 @@ function parseVendas() {
 function parseVendasFidel() {
     var vendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
     var vendasDiasInfidel = [0,0,0,0,0,0,0,0,0,0,0,0];
-    console.log(result[0]);
     result.forEach(query => {
         query.forEach(element => {
             let dia = element.date.dia - 13;
@@ -141,7 +243,6 @@ function parseVendasFidel() {
 function parsePorcVendasFidel() {
     var vendasFidel = 0;
     var vendasInfidel = 0;
-    console.log(result[0]);
     result.forEach(query => {
         query.forEach(element => {
             if (element.date.dia>=20) {
@@ -161,12 +262,13 @@ function parsePorcVendasFidel() {
 
 function parseClientesFidelizados() {
     var vendasFidel = 0;
-    console.log(result[0]);
+    var clientes = [];
     result.forEach(query => {
         query.forEach(element => {
             if (element.date.dia>=20) {
-                if (element.points != 0) {
+                if (element.points != 0 && !clientes.includes(element.cliente.id)) {
                     vendasFidel++;
+                    clientes.push(element.cliente.id);
                 }
             }
         });        
@@ -174,9 +276,22 @@ function parseClientesFidelizados() {
     return vendasFidel;
 }
 
+function parseClientesNaoFidelizados() {
+    var vendasInfidel = 0;
+    var clientes = [];
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.points == 0 && !clientes.includes(element.cliente.id)) {
+                vendasInfidel++;
+                clientes.push(element.cliente.id);
+            }
+        });        
+    });
+    return vendasInfidel;
+}
+
 function parsePontDist() {
     var pontosDistribuidos = 0;
-    console.log(result[0]);
     result.forEach(query => {
         query.forEach(element => {
             if (element.date.dia>=20) {
@@ -192,7 +307,6 @@ function parsePontDist() {
 function parseMediaVendas(result) {
     var mediaDias = [0,0,0,0,0,0,0,0,0,0,0,0];
     var qntDias = [0,0,0,0,0,0,0,0,0,0,0,0];
-    console.log(result[0]);
     result.forEach(query => {
         query.forEach(element => {
             let dia = element.date.dia - 13;
