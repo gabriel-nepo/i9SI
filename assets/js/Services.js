@@ -13,6 +13,7 @@ $(document).ready(function() {
         xmlhttp.send();
     }
     setTimeout(function(){
+        testesdef();
         var line = new Morris.Line({
             element          : 'vendas-dia',
             resize           : true,
@@ -20,13 +21,15 @@ $(document).ready(function() {
             xkey             : 'y',
             ykeys            : ['item1'],
             labels           : ['Quantidade de vendas'],
-            lineColors       : ['#555'],
+            lineColors       : ['#111'],
             hideHover        : 'auto',
             gridStrokeWidth  : 0.4,
             events           : ['2019-09-19'],
             eventStrokeWidth   : 3,
             eventLineColors  : ['#A59DB7'],
-            pointSize        : 4
+            pointSize        : 4,
+            goalLineColors   : '#333',
+            gridTextColor    : '#333'
         })
         var line = new Morris.Line({
             element          : 'lucro-dia',
@@ -41,7 +44,9 @@ $(document).ready(function() {
             events           : ['2019-09-19'],
             eventStrokeWidth   : 3,
             eventLineColors  : ['#A59DB7'],
-            pointSize        : 4
+            pointSize        : 4,
+            gridTextColor    : '#333',
+            yLabelFormat     :  function (y, data) { return 'R$' + y } 
         })
         var area = new Morris.Area({
             element   : 'num-fidel',
@@ -55,7 +60,8 @@ $(document).ready(function() {
             events           : ['2019-09-19'],
             eventStrokeWidth   : 3,
             eventLineColors  : ['#A59DB7'],
-            behaveLikeLine: 'true'
+            behaveLikeLine: 'true',
+            gridTextColor    : '#333'
         })            
         // Donut Chart
         var donut = new Morris.Donut({
@@ -63,7 +69,9 @@ $(document).ready(function() {
             resize   : true,
             colors   : ['#765ea8', '#333'],
             data     : parsePorcVendasFidel(),
-            hideHover: 'auto'
+            hideHover: 'auto',
+            gridTextColor    : '#333',
+            formatter : function (y, data) { return y+'%' } 
         })
         var chartL = new Morris.Bar({
             element  : 'media-a-d',
@@ -73,7 +81,8 @@ $(document).ready(function() {
             xkey     : 'y',
             ykeys    : ['item1', 'item2'],
             labels   : ['Antes', 'Depois'],
-            hideHover: 'auto'
+            hideHover: 'auto',
+            gridTextColor    : '#333'
         })
         var chartV = new Morris.Bar({
             element  : 'media-a-d-v',
@@ -83,7 +92,8 @@ $(document).ready(function() {
             xkey     : 'y',
             ykeys    : ['item1', 'item2'],
             labels   : ['Antes', 'Depois'],
-            hideHover: 'auto'
+            hideHover: 'auto',
+            gridTextColor    : '#333'
         })
         var vendashora = new Morris.Area({
             element   : 'vendas-hora',
@@ -95,8 +105,10 @@ $(document).ready(function() {
             lineColors: ['#888', '#765ea8', '#495057'],
             hideHover : 'auto',
             behaveLikeLine: 'true',
-            parseTime : false
+            parseTime : false,
+            gridTextColor    : '#333'
         })
+        document.getElementById("conteudoDicas").innerHTML = parseVendasHorasDica();
         $('.loading-gif').remove();
         document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
         document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
@@ -141,6 +153,52 @@ function parseVendasHora() {
         }
     }
     return data;
+}
+
+function parseVendasHorasDica() {
+    horas = []
+    horasFNF = []
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia >= 20) {
+                // quantas vendas foram realizadas na hora x
+                if(typeof horas[element.date.hora] === 'undefined'){
+                    horas[element.date.hora] = 1
+                }else{
+                    horas[element.date.hora]++
+                }
+                // quantas vendas da hora x  sao de clientes fidelizados
+                if(typeof horasFNF[element.date.hora] === 'undefined'){
+                    horasFNF[element.date.hora] = 1
+                }else if(element.points != 0){
+                    horasFNF[element.date.hora]++
+                }
+            }
+        });        
+    });
+    var data = [];
+    for(var i=0;i<24;i++) {
+        if(typeof horas[i]!=='undefined') {
+            data.push(horas[i]/5);
+        }
+    }
+    var soma = data.reduce((a, b) => a + b, 0);
+    soma/=data.length;
+    var menores = [];
+    var maiores = []
+    for(i=0;i<data.length;i++) {
+        if(data[i] <= soma) {
+            menores.push(i+1);
+        } else {
+            maiores.push(i+1);
+        }
+    }
+    var a = "";
+    menores.forEach(element => {
+        a += element+"h, "
+    });
+
+    return "Horários de menor venda: <br>"+ a.substring(0, a.length - 2) +"<br> É recomendável que reduza a alocação de funcionários nesses horários.";
 }
 
 function parseLucro() {
@@ -232,6 +290,23 @@ function parseVendasFidel() {
                 vendasDiasInfidel[dia]++
             } else {
                 vendasDias[dia]++;
+            }
+        });        
+    });
+    var data = [];
+    for(var i=0;i<12;i++) {
+        data.push({y:`2019-09-${i+13}`, item1: vendasDiasInfidel[i]+vendasDias[i], item2: vendasDias[i], item3: vendasDiasInfidel[i]})
+    }
+    return data;
+}
+
+function testesdef() {
+    var vendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
+    var vendasDiasInfidel = [0,0,0,0,0,0,0,0,0,0,0,0];
+    result.forEach(query => {
+        query.forEach(element => {
+            if (element.date.dia == 24 && element.pontos == 0) {
+                console.log(element.cliente.id);
             }
         });        
     });

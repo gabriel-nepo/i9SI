@@ -27,7 +27,7 @@
     <a class="navbar-brand" href="index.html"><img src="assets/img/i9SeuPosto.png" class="brand-img"></a>
     
     <span style="margin-right: 0; margin-left: auto;">
-      <a class="nav-link" href="login.html" >Sair</a>
+      <a class="btn btn-secondary nav-link" href="login.html" >Sair</a>
     </span>
   </nav>
 
@@ -78,7 +78,7 @@
                     <div class="inner">
                       <h3 id="clientes-fidelizados">0</h3>
       
-                      <p>Clientes Fidelizados</p>
+                      <p>Clientes fidelizados</p>
                     </div>
                     <div class="icon">
                       <i class="fa fa-user"></i>
@@ -197,6 +197,13 @@
                         <i class="fa fa-pie-chart mr-1"></i>
                         Média de vendas por hora do dia (após implantação)
                       </h3>
+                      <ul class="nav nav-pills ml-auto p-2">
+                        <li class="nav-item">
+                            <button type="button" class="btn nav-link active" data-toggle="modal" data-target="#exampleModal">
+                              Dicas
+                            </button>
+                        </li>
+                      </ul>
                     </div><!-- /.card-header -->
                     <div class="card-body">
                       <div class="tab-content p-0">
@@ -204,6 +211,7 @@
                         <div class="chart text-center" id="vendas-hora"
                              style="position: relative; height: 300px;"><img class="loading-gif" src="assets/img/loading.gif" alt="Aguarde..."></div>
                       </div>
+                      
                     </div><!-- /.card-body -->
                   </div>
                       <!-- /.card -->
@@ -213,6 +221,25 @@
     </div>
     <!-- /.content -->
   </div>
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Dicas do fluxo de negócio</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="conteudoDicas"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- /.content-wrapper -->
   <!-- Main Footer -->
   <footer class="main-footer">
