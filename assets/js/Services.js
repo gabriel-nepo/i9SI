@@ -1,11 +1,10 @@
 var result = []
 
-$(document).ready(function() {
+$(document).ready(setTimeout(function() {
     capturaJSON().then(()=>{
         desenhaGraficos();
     });
-    // setTimeout(function(){desenhaGraficos()},3000);
-});
+},1000));
 
 async function capturaJSON(){
     try {
