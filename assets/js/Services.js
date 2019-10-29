@@ -1,127 +1,135 @@
 var result = []
 
 $(document).ready(function() {
-    result = []
-    for(let i=0;i<7;i++) {
-        let xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            result.push(JSON.parse(this.responseText));
-        }
-        };
-        xmlhttp.open("GET", `https://hackaengine-dot-red-equinox-253000.appspot.com/sales?per_page=200&offset=${i*200}`, true);
-        xmlhttp.send();
-    }
-    setTimeout(function(){
-        testesdef();
-        var line = new Morris.Line({
-            element          : 'vendas-dia',
-            resize           : true,
-            data             : parseVendas(),
-            xkey             : 'y',
-            ykeys            : ['item1'],
-            labels           : ['Quantidade de vendas'],
-            lineColors       : ['#111'],
-            hideHover        : 'auto',
-            gridStrokeWidth  : 0.4,
-            events           : ['2019-09-19'],
-            eventStrokeWidth   : 3,
-            eventLineColors  : ['#A59DB7'],
-            pointSize        : 4,
-            goalLineColors   : '#333',
-            gridTextColor    : '#333'
-        })
-        var line = new Morris.Line({
-            element          : 'lucro-dia',
-            resize           : true,
-            data             : parseLucro(),
-            xkey             : 'y',
-            ykeys            : ['item1'],
-            labels           : ['Quantidade de Receita'],
-            lineColors       : ['#495057'],
-            hideHover        : 'auto',
-            gridStrokeWidth  : 0.4,
-            events           : ['2019-09-19'],
-            eventStrokeWidth   : 3,
-            eventLineColors  : ['#A59DB7'],
-            pointSize        : 4,
-            gridTextColor    : '#333',
-            yLabelFormat     :  function (y, data) { return 'R$' + y } 
-        })
-        var area = new Morris.Area({
-            element   : 'num-fidel',
-            resize    : true,
-            data      : parseVendasFidel(),
-            xkey      : 'y',
-            ykeys     : ['item1', 'item2', 'item3'],
-            labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
-            lineColors: ['#888', '#765ea8', '#495057'],
-            hideHover : 'auto',
-            events           : ['2019-09-19'],
-            eventStrokeWidth   : 3,
-            eventLineColors  : ['#A59DB7'],
-            behaveLikeLine: 'true',
-            gridTextColor    : '#333'
-        })            
-        // Donut Chart
-        var donut = new Morris.Donut({
-            element  : 'porc-fidel',
-            resize   : true,
-            colors   : ['#765ea8', '#333'],
-            data     : parsePorcVendasFidel(),
-            hideHover: 'auto',
-            gridTextColor    : '#333',
-            formatter : function (y, data) { return y+'%' } 
-        })
-        var chartL = new Morris.Bar({
-            element  : 'media-a-d',
-            resize   : true,
-            barColors   : ['#A59DB7', '#765ea8'],
-            data     : parseAntesDepoisVendas(),
-            xkey     : 'y',
-            ykeys    : ['item1', 'item2'],
-            labels   : ['Antes', 'Depois'],
-            hideHover: 'auto',
-            gridTextColor    : '#333'
-        })
-        var chartV = new Morris.Bar({
-            element  : 'media-a-d-v',
-            resize   : true,
-            barColors   : ['#A59DB7', '#765ea8'],
-            data     : parseAntesDepoisLucro(),
-            xkey     : 'y',
-            ykeys    : ['item1', 'item2'],
-            labels   : ['Antes', 'Depois'],
-            hideHover: 'auto',
-            gridTextColor    : '#333'
-        })
-        var vendashora = new Morris.Area({
-            element   : 'vendas-hora',
-            resize    : true,
-            data      : parseVendasHora(),
-            xkey      : 'y',
-            ykeys     : ['item1', 'item2', 'item3'],
-            labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
-            lineColors: ['#888', '#765ea8', '#495057'],
-            hideHover : 'auto',
-            behaveLikeLine: 'true',
-            parseTime : false,
-            gridTextColor    : '#333'
-        })
-        document.getElementById("conteudoDicas").innerHTML = parseVendasHorasDica();
-        $('.loading-gif').remove();
-        document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
-        document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
-        document.getElementById("clientes-nao-fid").innerHTML = 100 - parseClientesFidelizados();
-        // Fix for charts under tabs
-        $('.box ul.nav a').on('shown.bs.tab', function () {
-            area.redraw()
-            donut.redraw()
-            chartL.redraw()
-            chartV.redraw()
-        })
-    }, 3000);
+    capturaJSON().then(()=>{
+        desenhaGraficos();
+    });
+    // setTimeout(function(){desenhaGraficos()},3000);
 });
+
+async function capturaJSON(){
+    for(let i=0;i<7;i++) {
+        try {
+            url = `https://hackaengine-dot-red-equinox-253000.appspot.com/sales?per_page=200&offset=${i*200}`
+            const response = await fetch(url);
+             result.push(await response.json())
+          }
+          catch (err) {
+            console.log('fetch failed', err);
+          }
+    }
+}
+    
+function desenhaGraficos(){
+    // console.log(result)
+
+    var line = new Morris.Line({
+        element          : 'vendas-dia',
+        resize           : true,
+        data             : parseVendas(),
+        xkey             : 'y',
+        ykeys            : ['item1'],
+        labels           : ['Quantidade de vendas'],
+        lineColors       : ['#111'],
+        hideHover        : 'auto',
+        gridStrokeWidth  : 0.4,
+        events           : ['2019-09-19'],
+        eventStrokeWidth   : 3,
+        eventLineColors  : ['#A59DB7'],
+        pointSize        : 4,
+        goalLineColors   : '#333',
+        gridTextColor    : '#333'
+    })
+    var line = new Morris.Line({
+        element          : 'lucro-dia',
+        resize           : true,
+        data             : parseLucro(),
+        xkey             : 'y',
+        ykeys            : ['item1'],
+        labels           : ['Quantidade de Receita'],
+        lineColors       : ['#495057'],
+        hideHover        : 'auto',
+        gridStrokeWidth  : 0.4,
+        events           : ['2019-09-19'],
+        eventStrokeWidth   : 3,
+        eventLineColors  : ['#A59DB7'],
+        pointSize        : 4,
+        gridTextColor    : '#333',
+        yLabelFormat     :  function (y, data) { return 'R$' + y } 
+    })
+    var area = new Morris.Area({
+        element   : 'num-fidel',
+        resize    : true,
+        data      : parseVendasFidel(),
+        xkey      : 'y',
+        ykeys     : ['item1', 'item2', 'item3'],
+        labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
+        lineColors: ['#888', '#765ea8', '#495057'],
+        hideHover : 'auto',
+        events           : ['2019-09-19'],
+        eventStrokeWidth   : 3,
+        eventLineColors  : ['#A59DB7'],
+        behaveLikeLine: 'true',
+        gridTextColor    : '#333'
+    })            
+    // Donut Chart
+    var donut = new Morris.Donut({
+        element  : 'porc-fidel',
+        resize   : true,
+        colors   : ['#765ea8', '#333'],
+        data     : parsePorcVendasFidel(),
+        hideHover: 'auto',
+        gridTextColor    : '#333',
+        formatter : function (y, data) { return y+'%' } 
+    })
+    var chartL = new Morris.Bar({
+        element  : 'media-a-d',
+        resize   : true,
+        barColors   : ['#A59DB7', '#765ea8'],
+        data     : parseAntesDepoisVendas(),
+        xkey     : 'y',
+        ykeys    : ['item1', 'item2'],
+        labels   : ['Antes', 'Depois'],
+        hideHover: 'auto',
+        gridTextColor    : '#333'
+    })
+    var chartV = new Morris.Bar({
+        element  : 'media-a-d-v',
+        resize   : true,
+        barColors   : ['#A59DB7', '#765ea8'],
+        data     : parseAntesDepoisLucro(),
+        xkey     : 'y',
+        ykeys    : ['item1', 'item2'],
+        labels   : ['Antes', 'Depois'],
+        hideHover: 'auto',
+        gridTextColor    : '#333'
+    })
+    var vendashora = new Morris.Area({
+        element   : 'vendas-hora',
+        resize    : true,
+        data      : parseVendasHora(),
+        xkey      : 'y',
+        ykeys     : ['item1', 'item2', 'item3'],
+        labels    : ['Total', 'Fidelizados', 'Não fidelizados'],
+        lineColors: ['#888', '#765ea8', '#495057'],
+        hideHover : 'auto',
+        behaveLikeLine: 'true',
+        parseTime : false,
+        gridTextColor    : '#333'
+    })
+    document.getElementById("conteudoDicas").innerHTML = parseVendasHorasDica();
+    $('.loading3-gif').remove();
+    document.getElementById("clientes-fidelizados").innerHTML = parseClientesFidelizados();
+    document.getElementById("pontuacao-distribuida").innerHTML = parsePontDist();
+    document.getElementById("clientes-nao-fid").innerHTML = 100 - parseClientesFidelizados();
+    // Fix for charts under tabs
+    $('.box ul.nav a').on('shown.bs.tab', function () {
+        area.redraw()
+        donut.redraw()
+        chartL.redraw()
+        chartV.redraw()
+    })
+}
 
 function parseVendasHora() {
     horas = []
@@ -290,23 +298,6 @@ function parseVendasFidel() {
                 vendasDiasInfidel[dia]++
             } else {
                 vendasDias[dia]++;
-            }
-        });        
-    });
-    var data = [];
-    for(var i=0;i<12;i++) {
-        data.push({y:`2019-09-${i+13}`, item1: vendasDiasInfidel[i]+vendasDias[i], item2: vendasDias[i], item3: vendasDiasInfidel[i]})
-    }
-    return data;
-}
-
-function testesdef() {
-    var vendasDias = [0,0,0,0,0,0,0,0,0,0,0,0];
-    var vendasDiasInfidel = [0,0,0,0,0,0,0,0,0,0,0,0];
-    result.forEach(query => {
-        query.forEach(element => {
-            if (element.date.dia == 24 && element.pontos == 0) {
-                console.log(element.cliente.id);
             }
         });        
     });
