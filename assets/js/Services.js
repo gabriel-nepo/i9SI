@@ -8,18 +8,27 @@ $(document).ready(function() {
 });
 
 async function capturaJSON(){
-    for(let i=0;i<7;i++) {
-        try {
-            url = `https://hackaengine-dot-red-equinox-253000.appspot.com/sales?per_page=200&offset=${i*200}`
-            const response = await fetch(url);
-             result.push(await response.json())
-          }
-          catch (err) {
-            console.log('fetch failed', err);
-          }
+    try {
+    url = "https://gabriel-nepo.github.io/i9SI/api.json"
+    const response = await fetch(url);
+        result.push(await response.json())
     }
+    catch (err) {
+        console.log('fetch failed', err);
+    }
+    // for(let i=0;i<7;i++) {
+    //     try {
+    //         url = `https://hackaengine-dot-red-equinox-253000.appspot.com/sales?per_page=200&offset=${i*200}`
+    //         const response = await fetch(url);
+    //          result.push(await response.json())
+    //       }
+    //       catch (err) {
+    //         console.log('fetch failed', err);
+    //       }
+    // }
 }
-    
+
+
 function desenhaGraficos(){
     // console.log(result)
 
